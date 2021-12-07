@@ -1,0 +1,77 @@
+service: puppeteer-scraper-example
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: ${opt:stage, self:custom.defaultStage}
+  region: eu-west-1
+  # some env variables that need be interpolated should
+  # be placed here
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+
+  logRetentionInDays: 14
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - ec2:CreateNetworkInterface
+        - ec2:DescribeNetworkInterfaces
+        - ec2:DeleteNetworkInterface
+        - s3:*
+        - sqs:*
+        - lambda:*
+        - ses:*
+      Resource: "*"
+  tracing:
+    apiGateway: true
+    lambda: true
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-webpack
+  - serverless-offline
+
+package:
+  excludeDevDependencies: true
+  individually: true
+
+custom:
+  defaultStage: dev
+
+  webpack:
+    webpackConfig: "webpack.config.js"
+    packager: "npm"
+    includeModules:
+      forceExclude:
+        - aws-sdk
+        - puppeteer-core
+        - chrome-aws-lambda
+
+  serverless-offline:
+    httpPort: 3001
+    useChildProcesses: true
+
+  dotenv:
+    logging: true
+
+functions:
+  app:
+    handler: src/handlers/app.handler
+    memorySize: 3000
+    timeout: 15
+    events:
+      - http:
+          method: ANY
+          path: "/"
+          cors: true
+      - http:
+          method: ANY
+          path: "{proxy+}"
+          cors: true
+
+  puppeteer:
+    handler: src/handlers/puppeteer.handler
+    memorySize: 2048
+    timeout: 300
+    layers:
+      - arn:aws:lambda:eu-west-1:743016643271:layer:chrome-layer:1 # create custom layer https://github.com/alixaxel/chrome-aws-lambda#aws-lambda-layer

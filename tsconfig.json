@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "es2019",
+    "module": "commonJS",
+    "strictNullChecks": true,
+    "newLine": "LF",
+    "noEmit": true,
+    "sourceMap": true,
+    "strict": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "jsx": "react",
+    "typeRoots": ["./node_modules/@types", "@types"],
+    "lib": ["ESNext", "dom"],
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true
+
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"],
+
+}

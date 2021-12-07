@@ -1,0 +1,12 @@
+node_modules
+reports
+yarn-error.log
+.webpack
+.envrc
+.serverless
+.env*
+.vscode/
+data/**.bak
+data/**.sql
+
+.DS_Store
